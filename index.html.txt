@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Cyber Vault</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        background: #050b14;
+        color: #e8fff5;
+        font-family: "Courier New", monospace;
+    }
+
+    .container {
+        width: 90%;
+        max-width: 900px;
+        margin: auto;
+        padding: 30px 0;
+    }
+
+    .screen {
+        display: none;
+        background: #0b1624;
+        border: 2px solid #00ff88;
+        border-radius: 15px;
+        padding: 35px;
+        box-shadow: 0 0 30px rgba(0,255,136,0.25);
+    }
+
+    .screen.active {
+        display: block;
+    }
+
+    h1 {
+        color: #00ff88;
+        text-align: center;
+        font-size: 42px;
+        text-shadow: 0 0 15px #00ff88;
+    }
+
+    h2 {
+        color: #00d9ff;
+    }
+
+    .subtitle {
+        text-align: center;
+        color: #aaa;
+        margin-bottom: 35px;
+    }
+
+    button {
+        display: block;
+        width: 100%;
+        padding: 15px;
+        margin: 12px 0;
+        border: 1px solid #00ff88;
+        border-radius: 8px;
+        background: #07111d;
+        color: #00ff88;
+        font-family: inherit;
+        font-size: 17px;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    button:hover {
+        background: #00ff88;
+        color: #00140b;
+        box-shadow: 0 0 15px #00ff88;
+    }
+
+    .start-button {
+        max-width: 350px;
+        margin: 30px auto;
+        font-size: 20px;
+    }
+
+    .topbar {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 25px;
+        color: #00ff88;
+    }
+
+    .puzzle-number {
+        color: #00d9ff;
+    }
+
+    .message {
+        margin-top: 20px;
+        padding: 15px;
+        border-radius: 8px;
+        display: none;
+    }
+
+    .correct {
+        display: block;
+        background: #063d25;
+        border: 1px solid #00ff88;
+        color: #00ff88;
+    }
+
+    .wrong {
+        display: block;
+        background: #3d0808;
+        border: 1px solid #ff4444;
+        color: #ff6666;
+    }
+
+    .email {
+        background: #f5f5f5;
+        color: #222;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 20px 0;
+        font-family: Arial, sans-serif;
+        text-align: left;
+    }
+
+    .email strong {
+        color: #111;
+    }
+
+    .code-display {
+        font-size: 38px;
+        letter-spacing: 12px;
+        text-align: center;
+        color: #00ff88;
+        margin: 30px;
+    }
+
+    .vault {
+        text-align: center;
+        padding: 30px;
+    }
+
+    .vault-icon {
+        font-size: 100px;
+        margin: 20px;
+    }
+
+    .success {
+        color: #00ff88;
+        font-size: 28px;
+        text-shadow: 0 0 15px #00ff88;
+    }
+
+    input {
+        width: 100%;
+        padding: 15px;
+        background: #02070d;
+        border: 1px solid #00ff88;
+        color: #00ff88;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 20px;
+        text-align: center;
+        margin: 15px 0;
+    }
+
+    .progress {
+        height: 8px;
+        background: #172434;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
+
+    .progress-bar {
+        height: 100%;
+        width: 0%;
+        background: #00ff88;
+        transition: 0.4s;
+    }
+
+    .hint {
+        color: #888;
+        font-size: 14px;
+        margin-top: 15px;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <!-- START SCREEN -->
+    <div id="startScreen" class="screen active">
+
+        <h1>🔐 CYBER VAULT</h1>
+
+        <p class="subtitle">
+            DIGITAL CYBERSECURITY CHALLENGE
+        </p>
+
+        <p>
+            Welcome, Cyber Agent.
+        </p>
+
+        <p>
+            Complete five cybersecurity challenges,
+            collect five digits, and unlock the Cyber Vault.
+        </p>
+
+        <button class="start-button" onclick="startGame()">
+            🚀 START CHALLENGE
+        </button>
+
+    </div>
+
+
+    <!-- GAME SCREEN -->
+    <div id="gameScreen" class="screen">
+
+        <div class="topbar">
+            <span id="puzzleNumber">Challenge 1 / 5</span>
+            <span>⏱️ <span id="timer">120</span>s</span>
+        </div>
+
+        <div class="progress">
+            <div id="progressBar" class="progress-bar"></div>
+        </div>
+
+        <div id="puzzleArea"></div>
+
+        <div id="message" class="message"></div>
+
+    </div>
+
+
+    <!-- FINAL SCREEN -->
+    <div id="finalScreen" class="screen">
+
+        <h1>🔐 CYBER VAULT</h1>
+
+        <p class="subtitle">
+            ALL CHALLENGES COMPLETED
+        </p>
+
+        <p>Enter your five-digit security code:</p>
+
+        <div class="code-display" id="codeDisplay">
+            _ _ _ _ _
+        </div>
+
+        <input
+            id="finalCode"
+            type="text"
+            maxlength="5"
+            placeholder="ENTER CODE"
+        >
+
+        <button onclick="unlockVault()">
+            🔓 UNLOCK VAULT
+        </button>
+
+        <div id="vaultResult"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentPuzzle = 0;
+let code = [];
+let timeLeft = 120;
+let timerInterval;
+
+const puzzles = [
+
+    {
+        question: `
+            <h2>🧩 Challenge 1: Decode the Message</h2>
+
+            <p>
+                The following message is encoded using Base64:
+            </p>
+
+            <h2 style="text-align:center">
+                SGVsbG8=
+            </h2>
+
+            <p>What does it decode to?</p>
+
+            <button onclick="answer(0, 'wrong')">
+                Hacker
+            </button>
+
+            <button onclick="answer(0, 'correct')">
+                Hello
+            </button>
+
+            <button onclick="answer(0, 'wrong')">
+                Secure
+            </button>
+
+            <button onclick="answer(0, 'wrong')">
+                Firewall
+            </button>
+
+            <p class="hint">
+                Hint: This is Base64 encoding, not encryption.
+            </p>
+        `,
+
+        digit: "7"
+    },
+
+    {
+        question: `
+            <h2>🌐 Challenge 2: Find the Fake URL</h2>
+
+            <p>
+                Which URL is suspicious?
+            </p>
+
+            <button onclick="answer(1, 'wrong')">
+                https://www.google.com
+            </button>
+
+            <button onclick="answer(1, 'correct')">
+                https://google-security-login.example.com
+            </button>
+
+            <button onclick="answer(1, 'wrong')">
+                https://www.microsoft.com
+            </button>
+
+            <button onclick="answer(1, 'wrong')">
+                https://www.wikipedia.org
+            </button>
+        `,
+
+        digit: "3"
+    },
+
+    {
+        question: `
+            <h2>🎣 Challenge 3: Detect the Phishing Email</h2>
+
+            <div class="email">
+
+                <p><strong>From:</strong>
+                security-alert@example.com</p>
+
+                <p><strong>Subject:</strong>
+                URGENT! Your account will be deleted!</p>
+
+                <hr>
+
+                <p>
+                    Your account will be permanently deleted
+                    in 10 minutes.
+                </p>
+
+                <p>
+                    Click the button below and enter your
+                    password to verify your identity.
+                </p>
+
+                <button style="background:#cc2222;color:white">
+                    VERIFY ACCOUNT
+                </button>
+
+            </div>
+
+            <p>
+                What is the biggest warning sign?
+            </p>
+
+            <button onclick="answer(2, 'correct')">
+                Urgency + password request
+            </button>
+
+            <button onclick="answer(2, 'wrong')">
+                The email has text
+            </button>
+
+            <button onclick="answer(2, 'wrong')">
+                It contains a button
+            </button>
+        `,
+
+        digit: "8"
+    },
+
+    {
+        question: `
+            <h2>🔑 Challenge 4: Weak Password</h2>
+
+            <p>
+                Which password is the weakest?
+            </p>
+
+            <button onclick="answer(3, 'wrong')">
+                X7!qP9#Lm2
+            </button>
+
+            <button onclick="answer(3, 'correct')">
+                password123
+            </button>
+
+            <button onclick="answer(3, 'wrong')">
+                T9@kL4!xQ8
+            </button>
+
+            <button onclick="answer(3, 'wrong')">
+                Vp#82Lm!7z
+            </button>
+        `,
+
+        digit: "1"
+    },
+
+    {
+        question: `
+            <h2>🛡️ Challenge 5: Cybersecurity Riddle</h2>
+
+            <p>
+                I protect a network.
+                <br><br>
+                I inspect network traffic.
+                <br><br>
+                I can block suspicious connections.
+                <br><br>
+                What am I?
+            </p>
+
+            <button onclick="answer(4, 'wrong')">
+                Keyboard
+            </button>
+
+            <button onclick="answer(4, 'wrong')">
+                Monitor
+            </button>
+
+            <button onclick="answer(4, 'correct')">
+                Firewall
+            </button>
+
+            <button onclick="answer(4, 'wrong')">
+                Printer
+            </button>
+        `,
+
+        digit: "5"
+    }
+
+];
+
+
+function startGame() {
+
+    currentPuzzle = 0;
+    code = [];
+    timeLeft = 120;
+
+    document.getElementById("startScreen")
+        .classList.remove("active");
+
+    document.getElementById("gameScreen")
+        .classList.add("active");
+
+    showPuzzle();
+
+    clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+
+        timeLeft--;
+
+        document.getElementById("timer")
+            .textContent = timeLeft;
+
+        if (timeLeft <= 0) {
+
+            clearInterval(timerInterval);
+
+            alert("⏰ Time's up!");
+
+            location.reload();
+        }
+
+    }, 1000);
+}
+
+
+function showPuzzle() {
+
+    document.getElementById("puzzleNumber")
+        .textContent =
+        "Challenge " + (currentPuzzle + 1) + " / 5";
+
+    document.getElementById("progressBar")
+        .style.width =
+        ((currentPuzzle) / 5 * 100) + "%";
+
+    document.getElementById("puzzleArea")
+        .innerHTML =
+        puzzles[currentPuzzle].question;
+
+    document.getElementById("message")
+        .className = "message";
+
+    document.getElementById("message")
+        .innerHTML = "";
+}
+
+
+function answer(puzzle, result) {
+
+    const message =
+        document.getElementById("message");
+
+    if (result === "correct") {
+
+        code.push(puzzles[puzzle].digit);
+
+        message.className =
+            "message correct";
+
+        message.innerHTML =
+            "🟢 CORRECT!<br><br>" +
+            "Security digit unlocked: <strong>" +
+            puzzles[puzzle].digit +
+            "</strong>";
+
+        setTimeout(() => {
+
+            currentPuzzle++;
+
+            if (currentPuzzle >= puzzles.length) {
+
+                finishGame();
+
+            } else {
+
+                showPuzzle();
+
+            }
+
+        }, 1500);
+
+    } else {
+
+        message.className =
+            "message wrong";
+
+        message.innerHTML =
+            "🔴 INCORRECT!<br><br>" +
+            "Try again.";
+    }
+}
+
+
+function finishGame() {
+
+    clearInterval(timerInterval);
+
+    document.getElementById("gameScreen")
+        .classList.remove("active");
+
+    document.getElementById("finalScreen")
+        .classList.add("active");
+
+    document.getElementById("codeDisplay")
+        .textContent =
+        code.join(" ");
+}
+
+
+function unlockVault() {
+
+    const entered =
+        document.getElementById("finalCode")
+        .value;
+
+    const result =
+        document.getElementById("vaultResult");
+
+    if (entered === "73815") {
+
+        result.innerHTML = `
+            <div class="vault">
+                <div class="vault-icon">🔓</div>
+
+                <div class="success">
+                    ACCESS GRANTED
+                </div>
+
+                <p>
+                    🎉 CYBER VAULT UNLOCKED!
+                </p>
+
+                <p>
+                    Congratulations, Cyber Agent!
+                </p>
+
+                <p>
+                    You successfully completed
+                    the Cybersecurity Challenge.
+                </p>
+            </div>
+        `;
+
+    } else {
+
+        result.innerHTML = `
+            <div class="message wrong">
+                ❌ ACCESS DENIED<br><br>
+                Incorrect security code.
+            </div>
+        `;
+    }
+}
+
+</script>
+
+</body>
+</html>
